@@ -8,8 +8,8 @@ import (
 )
 
 const (
-	// CreateActivityIDURL 创建activity_id
-	createActivityIDURL = "https://api.weixin.qq.com/cgi-bin/message/wxopen/activityid/create?access_token=%s"
+	// createActivityURL 创建activity_id
+	createActivityURL = "https://api.weixin.qq.com/cgi-bin/message/wxopen/activityid/create?access_token=%s"
 	// SendUpdatableMsgURL 修改动态消息
 	setUpdatableMsgURL = "https://api.weixin.qq.com/cgi-bin/message/wxopen/updatablemsg/send?access_token=%s"
 )
@@ -45,7 +45,7 @@ func (updatableMessage *UpdatableMessage) CreateActivityID() (res CreateActivity
 		return
 	}
 
-	uri := fmt.Sprintf(createActivityIDURL, accessToken)
+	uri := fmt.Sprintf(createActivityURL, accessToken)
 	response, err := util.HTTPGet(uri)
 	if err != nil {
 		return
