@@ -77,6 +77,8 @@ func (updatableMessage *UpdatableMessage) SetUpdatableMsg(activityID string, tar
 
 // CreateActivityIDResponse 创建activity_id 返回
 type CreateActivityIDResponse struct {
+	util.CommonError
+
 	ActivityID     string `json:"activity_id"`
 	ExpirationTime int64  `json:"expiration_time"`
 }
