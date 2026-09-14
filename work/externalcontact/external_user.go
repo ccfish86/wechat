@@ -176,6 +176,7 @@ type BatchGetExternalUserDetailsRequest struct {
 type ExternalUserDetailListResponse struct {
 	util.CommonError
 	ExternalContactList []ExternalUserForBatch `json:"external_contact_list"`
+	NextCursor          string                 `json:"next_cursor"`
 }
 
 // ExternalUserForBatch 批量获取外部联系人客户列表
@@ -186,16 +187,16 @@ type ExternalUserForBatch struct {
 
 // ExternalContact 批量获取外部联系人用户信息
 type ExternalContact struct {
-	ExternalUserID  string `json:"external_userid"`
-	Name            string `json:"name"`
-	Position        string `json:"position"`
-	Avatar          string `json:"avatar"`
-	CorpName        string `json:"corp_name"`
-	CorpFullName    string `json:"corp_full_name"`
-	Type            int64  `json:"type"`
-	Gender          int64  `json:"gender"`
-	UnionID         string `json:"unionid"`
-	ExternalProfile string `json:"external_profile"`
+	ExternalUserID  string           `json:"external_userid"`
+	Name            string           `json:"name"`
+	Position        string           `json:"position"`
+	Avatar          string           `json:"avatar"`
+	CorpName        string           `json:"corp_name"`
+	CorpFullName    string           `json:"corp_full_name"`
+	Type            int64            `json:"type"`
+	Gender          int64            `json:"gender"`
+	UnionID         string           `json:"unionid"`
+	ExternalProfile *ExternalProfile `json:"external_profile"`
 }
 
 // FollowInfo 批量获取外部联系人跟进人信息
@@ -214,23 +215,23 @@ type FollowInfo struct {
 
 // BatchGetExternalUserDetails 批量获取外部联系人详情
 // @see https://developer.work.weixin.qq.com/document/path/92994
-func (r *Client) BatchGetExternalUserDetails(request BatchGetExternalUserDetailsRequest) ([]ExternalUserForBatch, error) {
+func (r *Client) BatchGetExternalUserDetails(request BatchGetExternalUserDetailsRequest) ([]ExternalUserForBatch, string, error) {
 	accessToken, err := r.GetAccessToken()
 	if err != nil {
-		return nil, err
+		return nil, "", err
 	}
 	var response []byte
 	jsonData, err := json.Marshal(request)
 	if err != nil {
-		return nil, err
+		return nil, "", err
 	}
 	response, err = util.HTTPPost(fmt.Sprintf("%s?access_token=%v", fetchBatchExternalContactUserDetailURL, accessToken), string(jsonData))
 	if err != nil {
-		return nil, err
+		return nil, "", err
 	}
 	var result ExternalUserDetailListResponse
 	err = util.DecodeWithError(response, &result, "BatchGetExternalUserDetails")
-	return result.ExternalContactList, err
+	return result.ExternalContactList, result.NextCursor, err
 }
 
 // UpdateUserRemarkRequest 修改客户备注信息请求体
